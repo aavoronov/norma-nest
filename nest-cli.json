@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "./",
+  "compilerOptions": {
+    "assets": [
+      "./src/core/components/**",
+      "./src/utils/*.csv",
+      "./src/utils/import.js",
+      "./src/core/core/components"
+    ]
+  }
+}
