@@ -4,6 +4,6 @@ import { PreviewsController } from './previews.controller';
 
 @Module({
   controllers: [PreviewsController],
-  providers: [PreviewsService]
+  providers: [PreviewsService],
 })
 export class PreviewsModule {}
