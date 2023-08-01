@@ -70,6 +70,7 @@ export class LessonsService {
           'timings',
           'duration',
           'isPaid',
+          'views',
         ],
       });
 
@@ -78,7 +79,13 @@ export class LessonsService {
         !lesson.isPaid;
       const data = lesson.toJSON();
 
-      return !!hasAccess ? data : { ...data, video: null };
+      if (hasAccess) {
+        Lesson.increment('views', { by: 1, where: { id: id } });
+      }
+
+      return !!hasAccess
+        ? { ...data, views: void 0 }
+        : { ...data, video: null, views: void 0 };
     } catch (e) {
       throw new HttpException(e.message, e.status, {
         cause: new Error('Some Error'),

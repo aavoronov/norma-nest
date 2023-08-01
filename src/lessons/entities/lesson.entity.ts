@@ -59,11 +59,12 @@ export class Lesson extends Model<Lesson> {
   })
   order: number;
 
-  // @Column({
-  //   type: DataType.ARRAY(DataType.ARRAY(DataType.STRING)),
-  //   allowNull: false,
-  // })
-  // timings: [string, string][];
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  views: number;
 
   @Column({
     type: DataType.STRING(1000),
