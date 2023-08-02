@@ -3,6 +3,7 @@ import { Course } from '../courses/entities/course.entity';
 import { Lesson } from '../lessons/entities/lesson.entity';
 import { CourseSection } from './entities/course-section.entity';
 import { Preview } from '../previews/entities/preview.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CourseSectionsService {
@@ -13,7 +14,15 @@ export class CourseSectionsService {
         include: [
           {
             model: Lesson,
-            attributes: ['id', 'title', 'duration', 'createdAt', 'filterId'],
+            attributes: [
+              'id',
+              'title',
+              'duration',
+              'createdAt',
+              'filterId',
+              'courseId',
+            ],
+            where: { courseId: { [Op.ne]: null } },
             as: 'lessons',
             include: [{ model: Preview, attributes: ['url'] }],
           },
