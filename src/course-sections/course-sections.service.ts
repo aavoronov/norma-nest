@@ -22,7 +22,7 @@ export class CourseSectionsService {
               'filterId',
               'courseId',
             ],
-            where: { courseId: { [Op.ne]: null } },
+            where: { courseId: null },
             as: 'lessons',
             include: [{ model: Preview, attributes: ['url'] }],
           },
