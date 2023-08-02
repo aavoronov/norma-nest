@@ -3,6 +3,7 @@ import { Course } from '../courses/entities/course.entity';
 import { Lesson } from '../lessons/entities/lesson.entity';
 import { CourseSection } from './entities/course-section.entity';
 import { Preview } from '../previews/entities/preview.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CourseSectionsService {
@@ -21,7 +22,8 @@ export class CourseSectionsService {
               'filterId',
               'courseId',
             ],
-            where: { courseId: null },
+            where: { courseId: { [Op.eq]: null } },
+            required: false,
             as: 'lessons',
             include: [{ model: Preview, attributes: ['url'] }],
           },
