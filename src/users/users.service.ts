@@ -329,6 +329,7 @@ export class UsersService {
 
   async updateUser(req, userData: UpdateUserDto) {
     const user = await this.getUserByToken(req.headers.authorization);
+    console.log('userData', userData);
     user.update(userData);
 
     return { status: StatusCodes.OK, text: 'success' };

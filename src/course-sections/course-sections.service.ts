@@ -11,6 +11,7 @@ export class CourseSectionsService {
     try {
       const sections = await CourseSection.findAll({
         attributes: ['id', 'section'],
+        order: [['order', 'ASC']],
         include: [
           {
             model: Lesson,

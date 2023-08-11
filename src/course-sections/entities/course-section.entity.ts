@@ -12,6 +12,12 @@ export class CourseSection extends Model<CourseSection> {
   @ApiProperty()
   section: string;
 
+  @Column({
+    type: DataType.INTEGER,
+  })
+  @ApiProperty()
+  order: number;
+
   @HasMany(() => Course)
   courses: Course;
 
