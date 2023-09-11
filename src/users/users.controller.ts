@@ -93,4 +93,14 @@ export class UsersController {
   restore(@Body() data: { restoration: string; password: string }) {
     return this.usersService.restore(data);
   }
+
+  @Get('payment-info')
+  requestPaymentInfo() {
+    return this.usersService.requestPaymentInfo();
+  }
+
+  @Post('renew-subscription')
+  renewSubscription(@Body() data: any) {
+    return this.usersService.renewSubscription(data);
+  }
 }

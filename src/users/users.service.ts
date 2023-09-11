@@ -661,4 +661,23 @@ export class UsersService {
       });
     }
   }
+
+  async requestPaymentInfo() {
+    const merchantId = process.env.MERCHANT_ID;
+    const apiPassword = process.env.API_PASSWORD;
+
+    const authorization = Buffer.from(`${merchantId}:${apiPassword}`).toString(
+      'base64',
+    );
+    console.log(authorization);
+
+    return {
+      merchantId: merchantId,
+      authorization: authorization,
+    };
+  }
+
+  async renewSubscription(data: any) {
+    console.log('webhook data', data);
+  }
 }
