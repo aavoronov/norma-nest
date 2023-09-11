@@ -292,6 +292,7 @@ export class UsersService {
         message: ReasonPhrases.OK,
         token: accessToken,
         user: {
+          id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -313,6 +314,7 @@ export class UsersService {
       // return { email: result.email, phone: result.phone, role: result.role };
 
       return {
+        id: result.id,
         name: result.name,
         email: result.email,
         role: result.role,
@@ -394,6 +396,11 @@ export class UsersService {
         cause: new Error('Some Error'),
       });
     }
+  }
+
+  async post3ds(data: { MD: string; PaRes: string }) {
+    console.log(data);
+    return 'ok';
   }
 
   async subscribe(req, data: { id: number }) {

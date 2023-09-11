@@ -104,6 +104,11 @@ export class AdminController {
     return this.adminService.getAllGenericEntries(queries);
   }
 
+  @Get('files/:slug?*')
+  getAllFiles(@Param() params: string[]) {
+    return this.adminService.getAllFiles(params);
+  }
+
   // ------------------------------------------- //
 
   @Get('users/:id')
@@ -356,6 +361,11 @@ export class AdminController {
   @Delete('generic-data/:id')
   deleteGenericEntry(@Param('id') id: number) {
     return this.adminService.deleteGenericEntry(id);
+  }
+
+  @Delete('files/:slug?*')
+  deleteFile(@Param() params: string[]) {
+    return this.adminService.deleteFile(params);
   }
 
   // ------------------------------------------- //

@@ -64,6 +64,11 @@ export class UsersController {
     return this.usersService.verify(verification);
   }
 
+  @Post('post3ds')
+  post3ds(@Body() data: { MD: string; PaRes: string }) {
+    return this.usersService.post3ds(data);
+  }
+
   @Post('subscribe')
   subscribe(@Req() req, @Body() data: { id: number }) {
     return this.usersService.subscribe(req, data);

@@ -6,7 +6,15 @@ export class AppService {
     return 'Hello World!';
   }
 
-  getFile(path: string, image: string, res: any): any {
-    return res.sendFile(image, { root: `./uploads/${path}` });
+  // getFile(path: string, image: string, res: any): any {
+  //   return res.sendFile(image, { root: `./uploads/${path}` });
+  // }
+
+  getFile(path: string[], res: any): any {
+    const parts = `${path['slug'] + path[0]}`.split('/');
+    const dir = parts.slice(0, -1).join('/');
+    const slug = parts[parts.length - 1];
+
+    return res.sendFile(slug, { root: `./uploads/` + dir + '/' });
   }
 }

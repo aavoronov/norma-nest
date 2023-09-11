@@ -17,6 +17,7 @@ import { GenericData } from '../generic-data/entities/generic-data.entity';
 import { Op } from 'sequelize';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import * as fs from 'fs';
 
 interface Params {
   order?: [[string, 'ASC' | 'DESC']];
@@ -318,6 +319,65 @@ export class AdminService {
       return { data, count };
     } catch (e) {
       console.log('e', e);
+    }
+  }
+
+  // getFile(path: string, image: string, res: any): any {
+  //   return res.sendFile(image, { root: `./uploads/${path}` });
+  // }
+
+  async getAllFiles(params: string[]) {
+    try {
+      console.log(params);
+
+      // const parts = `${params['slug'] + params[0]}`.split('/');
+      // const dir = parts.slice(0, -1).join('/');
+      const dir = `${params['slug'] ? params['slug'] : ''}${params[0]}`;
+
+      // console.log('parts', parts);
+      console.log('dir', dir);
+
+      const files = fs.readdirSync(`./uploads/${!!dir ? dir + '/' : ''}`, {
+        withFileTypes: true,
+      });
+      // console.log('files', files);
+
+      const res: {
+        id: number;
+        name: string;
+        isDir: boolean;
+        extension?: string;
+      }[] = [];
+
+      files.forEach(function (file, index) {
+        console.log(file.name);
+        console.log(` - isFile: ${file.isFile()}`);
+        console.log(` - isDirectory: ${file.isDirectory()}`);
+        const filenameDisassembled = file.name.split('.');
+
+        const isDir = file.isDirectory();
+        const name = isDir
+          ? filenameDisassembled[0]
+          : filenameDisassembled
+              .slice(0, filenameDisassembled.length - 1)
+              .join('.');
+        const extension = filenameDisassembled[filenameDisassembled.length - 1];
+        res.push({
+          id: index,
+          name: name,
+          isDir: isDir,
+          extension: isDir ? void 0 : extension,
+        });
+      });
+
+      return { data: res };
+      // const { rows: data, count } = await GenericData.findAndCountAll(
+      //   this.getParams(queries),
+      // );
+      // return { data, count };
+    } catch (e) {
+      console.log('e', e);
+      return e.message;
     }
   }
 
@@ -797,6 +857,29 @@ export class AdminService {
     } catch (e) {
       console.log('e', e);
     }
+  }
+
+  deleteFile(params: string[]) {
+    // const parts = `${params['slug'] + params[0]}`.split('/');
+    // const dir = parts.slice(0, -1).join('/');
+    // const slug = parts[parts.length - 1];
+
+    try {
+      const dir = `${params['slug'] ? params['slug'] : ''}${params[0]}`;
+
+      // console.log('parts', parts);
+      console.log('dir', dir);
+      // console.log('slug', slug);
+
+      fs.unlink('./uploads/' + dir, (err) => {
+        if (err) throw err;
+        console.log('./uploads/' + dir + ' was deleted');
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    // return res.sendFile(slug, { root: `./uploads/` + dir + '/' });
+    return { status: 204, text: 'success' };
   }
 
   // ------------------------------------------------ //
