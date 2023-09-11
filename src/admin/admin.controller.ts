@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Res,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -289,6 +290,16 @@ export class AdminController {
   @Post('generic-data')
   createGenericEntry(@Body() data: any) {
     return this.adminService.createGenericEntry(data);
+  }
+
+  @Post('files/:slug?*')
+  @UseInterceptors(FileInterceptor('file'))
+  createFile(
+    @Body() data: any,
+    @UploadedFile() file: Express.Multer.File,
+    @Param() params: string[],
+  ) {
+    return this.adminService.createFile(data, file, params);
   }
 
   // ------------------------------------------- //

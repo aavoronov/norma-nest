@@ -669,7 +669,6 @@ export class UsersService {
     const authorization = Buffer.from(`${merchantId}:${apiPassword}`).toString(
       'base64',
     );
-    console.log(authorization);
 
     return {
       merchantId: merchantId,
@@ -679,5 +678,6 @@ export class UsersService {
 
   async renewSubscription(data: any) {
     console.log('webhook data', data);
+    return { code: 0 };
   }
 }

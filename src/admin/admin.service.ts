@@ -703,6 +703,42 @@ export class AdminService {
     }
   }
 
+  async createFile(data: any, file: Express.Multer.File, params: string[]) {
+    try {
+      console.log(file);
+      const dir = `${params['slug'] ? params['slug'] : ''}${params[0]}`;
+
+      // console.log('parts', parts);
+      console.log('dir', dir);
+
+      const files = fs.readdirSync(`./uploads/${!!dir ? dir + '/' : ''}`);
+      console.log('files', files);
+
+      if (files.includes(file.originalname)) {
+        throw new HttpException(
+          'Файл с таким именем уже существует',
+          StatusCodes.BAD_REQUEST,
+          {
+            cause: new Error('Some Error'),
+          },
+        );
+      }
+      fs.writeFile(
+        `./uploads/${!!dir ? dir + '/' : ''}${file.originalname}`,
+        file.buffer,
+        function (err) {
+          if (err) throw err;
+          console.log('Saved!');
+        },
+      );
+      return { status: 201, text: 'success' };
+    } catch (e) {
+      throw new HttpException(e.message, StatusCodes.BAD_REQUEST, {
+        cause: new Error('Some Error'),
+      });
+    }
+  }
+
   // ------------------------------------------------ //
 
   async deleteUser(id: number) {
