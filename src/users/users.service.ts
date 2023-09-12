@@ -706,7 +706,10 @@ export class UsersService {
 
       const subscriptionsRes = await fetch(
         'https://api.cloudpayments.ru/subscriptions/find',
-        { method: 'POST', body: JSON.stringify({ accountId: user.id }) },
+        {
+          method: 'POST',
+          body: JSON.stringify({ accountId: user.id.toString() }),
+        },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -726,7 +729,10 @@ export class UsersService {
 
       const cancelSubscriptionRes = await fetch(
         'https://api.cloudpayments.ru/subscriptions/cancel',
-        { method: 'POST', body: JSON.stringify({ Id: activeSubscriptionId }) },
+        {
+          method: 'POST',
+          body: JSON.stringify({ Id: activeSubscriptionId.toString() }),
+        },
         {
           headers: {
             'Content-Type': 'application/json',
