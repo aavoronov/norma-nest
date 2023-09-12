@@ -716,11 +716,11 @@ export class UsersService {
         },
       );
 
-      const subscriptions = await subscriptionsRes.json();
+      const subscriptions = (await subscriptionsRes.json()).Model;
       console.log('subscriptions', subscriptions);
 
       const activeSubscriptionId = subscriptions.find(
-        (item) => item.Model.Status === 'Active',
+        (item) => item.Status === 'Active',
       ).Id;
 
       console.log('activeSubscriptionId', activeSubscriptionId);
