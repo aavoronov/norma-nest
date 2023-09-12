@@ -14,6 +14,7 @@ import { CheckUserDto, CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
+import fetch from 'node-fetch';
 
 const mailerService = new MailerService();
 
@@ -403,48 +404,6 @@ export class UsersService {
     return 'ok';
   }
 
-  async subscribe(req, data: { id: number }) {
-    try {
-      const { id } = data;
-      const selectedPlan = await SubscriptionPlan.findOne({
-        where: { id: id },
-      });
-      const user = await this.getUserByToken(req.headers.authorization);
-
-      const days = selectedPlan.term;
-      const date = !user.subscriptionThrough
-        ? new Date()
-        : user.subscriptionThrough;
-      date.setDate(date.getDate() + days);
-
-      // user.update({
-      //   subscriptionThrough: date,
-      //   subscriptionCancelled: false,
-      // });
-
-      // user.subscriptionThrough = date;
-      // user.subscriptionCancelled = false;
-
-      await User.update(
-        { subscriptionThrough: date, subscriptionCancelled: false },
-        { where: { id: user.id } },
-      );
-
-      console.log('user.subscriptionThrough', user.subscriptionThrough);
-      await Transaction.create({ userId: user.id, sum: selectedPlan.price });
-
-      return {
-        status: StatusCodes.CREATED,
-        text: 'ok',
-        date: user.subscriptionThrough,
-      };
-    } catch (e) {
-      throw new HttpException(e.message, e.status, {
-        cause: new Error('Some Error'),
-      });
-    }
-  }
-
   async sendPasswordRestorationMail(data: { email: string }) {
     try {
       const user = await User.findOne({ where: { email: data.email } });
@@ -676,8 +635,163 @@ export class UsersService {
     };
   }
 
+  async subscribe(data: { userId: number; subscriptionPlanId: number }) {
+    try {
+      const { userId, subscriptionPlanId } = data;
+      const selectedPlan = await SubscriptionPlan.findOne({
+        where: { id: subscriptionPlanId },
+      });
+      const user = await User.findOne({ where: { id: userId } });
+
+      const days = selectedPlan.term;
+      const date =
+        !user.subscriptionThrough ||
+        new Date(user.subscriptionThrough).valueOf() < new Date().valueOf()
+          ? new Date()
+          : user.subscriptionThrough;
+      date.setDate(date.getDate() + days);
+
+      await User.update(
+        { subscriptionThrough: date, subscriptionCancelled: false },
+        { where: { id: user.id } },
+      );
+
+      console.log('user.subscriptionThrough', user.subscriptionThrough);
+      await Transaction.create({ userId: user.id, sum: selectedPlan.price });
+
+      return {
+        status: StatusCodes.CREATED,
+        text: 'ok',
+        date: user.subscriptionThrough,
+      };
+    } catch (e) {
+      throw new HttpException(e.message, e.status, {
+        cause: new Error('Some Error'),
+      });
+    }
+  }
+
   async renewSubscription(data: any) {
     console.log('webhook data', data);
-    return { code: 0 };
+    try {
+      if (data.SubscriptionId) {
+        const merchantId = process.env.MERCHANT_ID;
+        const apiPassword = process.env.API_PASSWORD;
+
+        const authorization = Buffer.from(
+          `${merchantId}:${apiPassword}`,
+        ).toString('base64');
+
+        const subscriptionsRes = await fetch(
+          'https://api.cloudpayments.ru/subscriptions/find',
+          {
+            method: 'POST',
+            body: JSON.stringify({ accountId: data.AccountId }),
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Basic ${authorization}`,
+            },
+          },
+        );
+
+        const subscriptions = await subscriptionsRes.json();
+        console.log('subscriptions', subscriptions);
+
+        const activeSubscriptionId = subscriptions.find(
+          (item) => item.Model.Status === 'Active',
+        ).Id;
+
+        if (activeSubscriptionId !== data.SubscriptionId) {
+          console.log('activeSubscriptionId', activeSubscriptionId);
+
+          const cancelSubscriptionRes = await fetch(
+            'https://api.cloudpayments.ru/subscriptions/cancel',
+            { method: 'POST', body: JSON.stringify({ Id: data.AccountId }) },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Basic ${authorization}`,
+              },
+            },
+          );
+
+          console.log('cancelSubscriptionRes', cancelSubscriptionRes);
+        }
+      }
+      const humanFriendlyTerm = data.Description.split('на ')[1];
+      console.log(humanFriendlyTerm);
+      const selectedPlan = await SubscriptionPlan.findOne({
+        where: { humanFriendlyTerm: humanFriendlyTerm },
+      });
+
+      await this.subscribe({
+        userId: data.AccountId,
+        subscriptionPlanId: selectedPlan.id,
+      });
+
+      return { code: 0 };
+    } catch (e) {
+      throw new HttpException(e.message, e.status, {
+        cause: new Error('Some Error'),
+      });
+    }
   }
+
+  async unsubscribe(req: any) {
+    try {
+    } catch (e) {
+      const user = await this.getUserByToken(req.headers.authorization);
+
+      const merchantId = process.env.MERCHANT_ID;
+      const apiPassword = process.env.API_PASSWORD;
+
+      const authorization = Buffer.from(
+        `${merchantId}:${apiPassword}`,
+      ).toString('base64');
+
+      const subscriptionsRes = await fetch(
+        'https://api.cloudpayments.ru/subscriptions/find',
+        { method: 'POST', body: JSON.stringify({ accountId: user.id }) },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${authorization}`,
+          },
+        },
+      );
+
+      const subscriptions = await subscriptionsRes.json();
+      console.log('subscriptions', subscriptions);
+
+      const activeSubscriptionId = subscriptions.find(
+        (item) => item.Model.Status === 'Active',
+      ).Id;
+
+      console.log('activeSubscriptionId', activeSubscriptionId);
+
+      const cancelSubscriptionRes = await fetch(
+        'https://api.cloudpayments.ru/subscriptions/cancel',
+        { method: 'POST', body: JSON.stringify({ Id: user.id }) },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${authorization}`,
+          },
+        },
+      );
+
+      console.log('cancelSubscriptionRes', cancelSubscriptionRes);
+
+      await user.update({ subscriptionCancelled: true });
+
+      return { status: 200, text: 'success' };
+    }
+  }
+
+  // async amendSubscription(req: any) {
+  //   await this.unsubscribe(req);
+  //   await this.subscribe()
+  // }
 }

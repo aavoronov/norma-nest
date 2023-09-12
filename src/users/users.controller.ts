@@ -69,11 +69,6 @@ export class UsersController {
     return this.usersService.post3ds(data);
   }
 
-  @Post('subscribe')
-  subscribe(@Req() req, @Body() data: { id: number }) {
-    return this.usersService.subscribe(req, data);
-  }
-
   @Delete()
   deleteAccount(@Req() req) {
     return this.usersService.deleteAccount(req);
@@ -102,5 +97,10 @@ export class UsersController {
   @Post('renew-subscription')
   renewSubscription(@Body() data: any) {
     return this.usersService.renewSubscription(data);
+  }
+
+  @Post('unsubscribe')
+  unsubscribe(@Req() req, @Body() data: any) {
+    return this.usersService.unsubscribe(data);
   }
 }
