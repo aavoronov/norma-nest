@@ -704,13 +704,13 @@ export class UsersService {
         `${merchantId}:${apiPassword}`,
       ).toString('base64');
 
+      console.log(user.id.toString());
+
       const subscriptionsRes = await fetch(
         'https://api.cloudpayments.ru/subscriptions/find',
         {
           method: 'POST',
           body: JSON.stringify({ accountId: user.id.toString() }),
-        },
-        {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Basic ${authorization}`,
@@ -732,8 +732,6 @@ export class UsersService {
         {
           method: 'POST',
           body: JSON.stringify({ Id: activeSubscriptionId.toString() }),
-        },
-        {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Basic ${authorization}`,
@@ -741,12 +739,13 @@ export class UsersService {
         },
       );
 
-      console.log('cancelSubscriptionRes', cancelSubscriptionRes);
+      console.log('cancelSubscriptionRes', await cancelSubscriptionRes.json());
 
       await user.update({ subscriptionCancelled: true });
 
       return { status: 200, text: 'success' };
     } catch (e) {
+      console.log(e);
       throw new HttpException(e.message, e.status, {
         cause: new Error('Some Error'),
       });
