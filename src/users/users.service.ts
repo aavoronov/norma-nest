@@ -727,7 +727,7 @@ export class UsersService {
 
       const cancelSubscriptionRes = await fetch(
         'https://api.cloudpayments.ru/subscriptions/cancel',
-        { method: 'POST', body: JSON.stringify({ Id: user.id }) },
+        { method: 'POST', body: JSON.stringify({ Id: activeSubscriptionId }) },
         {
           headers: {
             'Content-Type': 'application/json',
