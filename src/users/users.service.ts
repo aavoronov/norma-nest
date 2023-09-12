@@ -695,7 +695,6 @@ export class UsersService {
 
   async unsubscribe(req: any) {
     try {
-    } catch (e) {
       const user = await this.getUserByToken(req.headers.authorization);
 
       const merchantId = process.env.MERCHANT_ID;
@@ -741,6 +740,10 @@ export class UsersService {
       await user.update({ subscriptionCancelled: true });
 
       return { status: 200, text: 'success' };
+    } catch (e) {
+      throw new HttpException(e.message, e.status, {
+        cause: new Error('Some Error'),
+      });
     }
   }
 
