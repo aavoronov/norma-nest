@@ -18,13 +18,23 @@ export class MailerService {
   port = process.env.MAILER_PORT;
   apiUrl = process.env.API_URL;
 
+  // transporter = createTransport({
+  //   host: 'smtp.yandex.ru',
+  //   port: 465,
+  //   //   service: "mail",
+  //   secure: true,
+  //   auth: {
+  //     user: this.user + '@yandex.ru',
+  //     pass: this.pass,
+  //   },
+  // });
+
   transporter = createTransport({
-    host: 'smtp.yandex.ru',
-    port: 465,
-    //   service: "mail",
+    host: this.host,
+    port: this.port,
     secure: true,
     auth: {
-      user: this.user + '@yandex.ru',
+      user: this.user + this.postfix,
       pass: this.pass,
     },
   });
@@ -35,7 +45,7 @@ export class MailerService {
             <p>Аккаунт зарегистрирован. <a href="${this.apiUrl}users/verify?key=${body.verification}">Нажмите, чтобы подтвердить ваш аккаунт.</a></p>
         `;
       const mailOptions = {
-        from: `НОРМА <${this.user}@yandex.ru>`,
+        from: `НОРМА <${this.user}${this.postfix}>`,
         to: body.email,
         subject: 'Данные нового аккаунта НОРМА',
         html: output,
@@ -55,7 +65,7 @@ export class MailerService {
             <p>Если вы не запрашивали смену пароля, просто игнорируйте это письмо.</p>
         `;
       const mailOptions = {
-        from: `НОРМА <${this.user}@yandex.ru>`,
+        from: `НОРМА <${this.user}${this.postfix}>`,
         to: body.email,
         subject: 'Восстановление пароля к аккаунту',
         html: output,
