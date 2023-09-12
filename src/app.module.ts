@@ -89,6 +89,9 @@ export class AppModule {
         '/users/edit',
         '/users/send-verification',
         '/users/subscribe',
+        '/users/payment-info',
+        '/users/subscribe',
+        '/users/unsubscribe',
         { path: '/users/', method: RequestMethod.DELETE },
         '/generic-data/',
       );

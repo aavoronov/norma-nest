@@ -674,52 +674,6 @@ export class UsersService {
   async renewSubscription(data: any) {
     console.log('webhook data', data);
     try {
-      if (data.SubscriptionId) {
-        const merchantId = process.env.MERCHANT_ID;
-        const apiPassword = process.env.API_PASSWORD;
-
-        const authorization = Buffer.from(
-          `${merchantId}:${apiPassword}`,
-        ).toString('base64');
-
-        const subscriptionsRes = await fetch(
-          'https://api.cloudpayments.ru/subscriptions/find',
-          {
-            method: 'POST',
-            body: JSON.stringify({ accountId: data.AccountId }),
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Basic ${authorization}`,
-            },
-          },
-        );
-
-        const subscriptions = await subscriptionsRes.json();
-        console.log('subscriptions', subscriptions);
-
-        const activeSubscriptionId = subscriptions.find(
-          (item) => item.Model.Status === 'Active',
-        ).Id;
-
-        if (activeSubscriptionId !== data.SubscriptionId) {
-          console.log('activeSubscriptionId', activeSubscriptionId);
-
-          const cancelSubscriptionRes = await fetch(
-            'https://api.cloudpayments.ru/subscriptions/cancel',
-            { method: 'POST', body: JSON.stringify({ Id: data.AccountId }) },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Basic ${authorization}`,
-              },
-            },
-          );
-
-          console.log('cancelSubscriptionRes', cancelSubscriptionRes);
-        }
-      }
       const humanFriendlyTerm = data.Description.split('на ')[1];
       console.log(humanFriendlyTerm);
       const selectedPlan = await SubscriptionPlan.findOne({
