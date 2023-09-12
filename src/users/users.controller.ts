@@ -99,8 +99,8 @@ export class UsersController {
     return this.usersService.renewSubscription(data);
   }
 
-  @Post('unsubscribe')
-  unsubscribe(@Req() req, @Body() data: any) {
-    return this.usersService.unsubscribe(data);
+  @Get('unsubscribe')
+  unsubscribe(@Req() req: any) {
+    return this.usersService.unsubscribe(req);
   }
 }
