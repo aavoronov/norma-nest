@@ -657,7 +657,6 @@ export class UsersService {
       );
 
       console.log('user.subscriptionThrough', user.subscriptionThrough);
-      await Transaction.create({ userId: user.id, sum: selectedPlan.price });
 
       return {
         status: StatusCodes.CREATED,
@@ -679,6 +678,8 @@ export class UsersService {
       const selectedPlan = await SubscriptionPlan.findOne({
         where: { humanFriendlyTerm: humanFriendlyTerm },
       });
+
+      await Transaction.create({ userId: data.AccountId, sum: data.Amount });
 
       await this.subscribe({
         userId: data.AccountId,
