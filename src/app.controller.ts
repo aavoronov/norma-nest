@@ -23,9 +23,4 @@ export class AppController {
   seeUploadedFile(@Param() params: string[], @Res() res: any) {
     return this.appService.getFile(params, res);
   }
-
-  @Post('card-test')
-  cardTest(@Body() body: any) {
-    console.log(body);
-  }
 }

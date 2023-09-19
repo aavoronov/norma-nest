@@ -679,7 +679,10 @@ export class UsersService {
         where: { humanFriendlyTerm: humanFriendlyTerm },
       });
 
-      await Transaction.create({ userId: data.AccountId, sum: data.Amount });
+      await Transaction.create({
+        userId: data.AccountId,
+        sum: parseFloat(data.Amount),
+      });
 
       await this.subscribe({
         userId: data.AccountId,
