@@ -26,7 +26,7 @@ export class Lesson extends Model<Lesson> {
   title: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.STRING(10000),
     allowNull: true,
   })
   @ApiProperty()

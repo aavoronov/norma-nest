@@ -399,11 +399,6 @@ export class UsersService {
     }
   }
 
-  async post3ds(data: { MD: string; PaRes: string }) {
-    console.log(data);
-    return 'ok';
-  }
-
   async sendPasswordRestorationMail(data: { email: string }) {
     try {
       const user = await User.findOne({ where: { email: data.email } });
@@ -672,6 +667,9 @@ export class UsersService {
 
   async renewSubscription(data: any) {
     console.log('webhook data', data);
+    // if (!data.SubscriptionId) {
+    //   return;
+    // }
     try {
       const humanFriendlyTerm = data.Description.split('на ')[1];
       console.log(humanFriendlyTerm);
@@ -728,6 +726,9 @@ export class UsersService {
       const activeSubscriptionId = subscriptions.find(
         (item) => item.Status === 'Active',
       ).Id;
+
+      if (!activeSubscriptionId)
+        return { status: 201, text: 'no active subscription' };
 
       console.log('activeSubscriptionId', activeSubscriptionId);
 

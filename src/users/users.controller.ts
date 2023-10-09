@@ -64,11 +64,6 @@ export class UsersController {
     return this.usersService.verify(verification);
   }
 
-  @Post('post3ds')
-  post3ds(@Body() data: { MD: string; PaRes: string }) {
-    return this.usersService.post3ds(data);
-  }
-
   @Delete()
   deleteAccount(@Req() req) {
     return this.usersService.deleteAccount(req);
